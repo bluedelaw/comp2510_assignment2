@@ -36,7 +36,8 @@ void updateGrid(char ***arr, int x, int y, Particle *parr, int count)
       }
   }
 
-  for (int p = 0; p < count && parr[p].colided != 1; p++) {
+  for (int p = 0; p < count && parr[p].colided == 0; p++) {
+    printf("HERE %d HERE \n",parr[p].colided);
     newArr[parr[p].y + 1][parr[p].x + 1] = '+';
   }
 
@@ -79,7 +80,7 @@ void moveParticles(Particle *arr, int length, int gridLengthx, int gridLengthy) 
                 }
             }
             //check if the particles have collided. if they collide, set their velocity to 0, making them stop
-            for (int a = i + 1; a < length; a++) {
+            for (int a = i; a < length; a++) {
                 if (arr[i].x == arr[a].x && arr[i].y == arr[a].y) {
                     arr[i].colided = 1;
                     arr[a].colided = 1;
