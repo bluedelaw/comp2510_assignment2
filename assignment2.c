@@ -37,7 +37,7 @@ void updateGrid(char ***arr, int x, int y, Particle *parr, int count)
   }
 
   for (int p = 0; p < count && parr[p].colided == 0; p++) {
-    printf("HERE %d HERE \n",parr[p].colided);
+    printf("HERE %d HERE \n", parr[p].colided);
     newArr[parr[p].y + 1][parr[p].x + 1] = '+';
   }
 
@@ -80,17 +80,21 @@ void moveParticles(Particle *arr, int length, int gridLengthx, int gridLengthy) 
                 }
             }
             //check if the particles have collided. if they collide, set their velocity to 0, making them stop
-            for (int a = i; a < length; a++) {
-                if (arr[i].x == arr[a].x && arr[i].y == arr[a].y) {
+            printf(" x and y %d %d \n", arr[i].x, arr[i].y);
+            for (int a = 0; a < length; a++) {
+                if(a != i){
+                printf("check");
+                if ((arr[i].x == arr[a].x) && (arr[i].y == arr[a].y)) {
+                    printf("colisions");
                     arr[i].colided = 1;
                     arr[a].colided = 1;
-                    break;
+                  
+                }
                 }
             }
         }
     }
 }
-
 Particle makeParticle(int x, int y, int vx, int vy){
   Particle temp;
   temp.x = x;
@@ -155,6 +159,7 @@ int main(int argc, char *argv[])
     //the size of the border
     int borderRows = rows + 2;
     int borderCols = cols + 2;
+
 
     for (int i = time; i > 0; i--) {
       moveParticles(particles, particle_count, cols, rows);
