@@ -27,11 +27,11 @@ void updateGrid(char ***arr, int x, int y, Particle *parr, int count)
       {
           if (i == 0 || i == x - 1 || j == 0 || j == y - 1)
           {
-              newArr[i][j] = '*';
+              newArr[j][i] = '*';
           }
           else
           {
-              newArr[i][j] = ' ';
+              newArr[j][i] = ' ';
           }
       }
   }
@@ -175,9 +175,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    for (int i = rows+1; i >-1 ; i--)
+    for (int i = cols+1; i >-1 ; i--)
     {
-        for (int j = 0; j < cols + 2; j++)
+        for (int j = 0; j < rows + 2; j++)
         {
             fprintf(outputFile, "%c", arr[i][j]);
         }
