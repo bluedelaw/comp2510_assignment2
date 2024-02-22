@@ -5,7 +5,7 @@ CFLAGS = -Wall -std=c11
 #Input file
 INPUT = input.txt
 OUTPUT = output.txt
-REF = ref.txt
+REF = ref4.txt
 # Source file
 SRCS = assignment2.c
 # Output

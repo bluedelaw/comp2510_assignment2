@@ -27,17 +27,16 @@ void updateGrid(char ***arr, int x, int y, Particle *parr, int count)
       {
           if (i == 0 || i == x - 1 || j == 0 || j == y - 1)
           {
-              newArr[j][i] = '*';
+              newArr[i][j] = '*';
           }
           else
           {
-              newArr[j][i] = ' ';
+              newArr[i][j] = ' ';
           }
       }
   }
 
-  for (int p = 0; p < count && parr[p].colided == 0; p++) {
-    printf("HERE %d HERE \n", parr[p].colided);
+  for (int p = 0; p < count && parr[p].colided != 1; p++) {
     newArr[parr[p].y + 1][parr[p].x + 1] = '+';
   }
 
@@ -46,71 +45,85 @@ void updateGrid(char ***arr, int x, int y, Particle *parr, int count)
 
 // call this function in a for loop for each second the simulation runs.
 void moveParticles(Particle *arr, int length, int gridLengthx, int gridLengthy) {
-    // for each particle in the array given.
-    for (int i = 0; i < length; i++) {
-        if (arr[i].colided == 0) {
-            // if the particle is going to move in the x direction
-            if (arr[i].vx != 0) {
-                // check if the particle will move past the maximum if so bounce, then invert the velocity
-                if (arr[i].x + arr[i].vx > gridLengthx) {
-                    arr[i].x = gridLengthx - (arr[i].x + arr[i].vx - gridLengthx);
-                    arr[i].vx = -arr[i].vx;
+    // Move particles
+    for (int j = 0; j < length; j++) {
+        if (arr[j].colided == 0) {
+                if (arr[j].x + arr[j].vx > gridLengthx) {
+                    arr[j].x = gridLengthx - (arr[j].x + arr[j].vx - gridLengthx);
+                    arr[j].vx = -arr[j].vx;
                 }
-                // if past the minimum, bounce and invert
-                else if (arr[i].x + arr[i].vx < 0) {
-                    arr[i].x = -(arr[i].x + arr[i].vx);
-                    arr[i].vx = -arr[i].vx;
+                // jf past the mjnjmum, bounce and jnvert
+                else if (arr[j].x + arr[j].vx < 0) {
+                    arr[j].x = -(arr[j].x + arr[j].vx);
+                    arr[j].vx = -arr[j].vx;
                 }
-                // regularly move the particle
+                // regularly move the partjcle
                 else {
-                    arr[i].x = arr[i].x + arr[i].vx;
+                    arr[j].x = arr[j].x + arr[j].vx;
                 }
-            }
-            // does the same thing for y as it did for x.
+            
+            //does the same for y
+                if (arr[j].y + arr[j].vy > gridLengthy) {
+                    arr[j].y = gridLengthy - (arr[j].y + arr[j].vy - gridLengthy);
+                    arr[j].vy = -arr[j].vy;
+                }
+                // jf past the mjnjmum, bounce and jnvert
+                else if (arr[j].y + arr[j].vy < 0) {
+                    arr[j].y = -(arr[j].y + arr[j].vy);
+                    arr[j].vy = -arr[j].vy;
+                }
+                // regularly move the partjcle
+                else {
+                    arr[j].y = arr[j].y + arr[j].vy;
+                }
+            // arr[j].y += arr[j].vy;
 
-            if (arr[i].vy != 0) {
-                if (arr[i].y + arr[i].vy > gridLengthy) {
-                    arr[i].y = gridLengthy - (arr[i].y + arr[i].vy - gridLengthy);
-                    arr[i].vy = -arr[i].vy;
-                } else if (arr[i].y + arr[i].vy < 0) {
-                    arr[i].y = -(arr[i].y + arr[i].vy);
-                    arr[i].vy = -arr[i].vy;
-                } else {
-                    arr[i].y = arr[i].y + arr[i].vy;
-                }
-            }
-            //check if the particles have collided. if they collide, set their velocity to 0, making them stop
-            printf(" x and y %d %d \n", arr[i].x, arr[i].y);
-            for (int a = 0; a < length; a++) {
-                if(a != i){
-                printf("check");
-                if ((arr[i].x == arr[a].x) && (arr[i].y == arr[a].y)) {
-                    printf("colisions");
-                    arr[i].colided = 1;
-                    arr[a].colided = 1;
-                  
-                }
+            // Handle border bouncing
+            // if (arr[j].x <= 0 || arr[j].x >= gridLengthx - 1) {
+            //     arr[j].vx *= -1;
+            // }
+            // if (arr[j].y <= 0 || arr[j].y >= gridLengthy - 1) {
+            //     arr[j].vy *= -1;
+            // }
+        }
+    }
+
+    // Check for collisions and handle them
+    for (int j = 0; j < length; j++) {
+        if (arr[j].colided == 0 && arr[j].x != -1) {
+            for (int k = j + 1; k < length; k++) {
+                if (arr[k].colided == 0 && arr[k].x != -1) {
+                    if (arr[j].x == arr[k].x && arr[j].y == arr[k].y) {
+                        arr[j].colided = 1;
+                        arr[k].colided = 1;
+                        arr[j].vx = 0;
+                        arr[j].vy = 0;
+                        arr[k].vx = 0;
+                        arr[k].vy = 0;
+                    }
                 }
             }
         }
     }
 }
-Particle makeParticle(int x, int y, int vx, int vy){
-  Particle temp;
-  temp.x = x;
-  temp.y = y;
-  temp.vx = vx;
-  temp.vy = vy;
-  temp.colided = 0;
-  return temp;
-}
+
+
+// Particle makeParticle(int x, int y, int vx, int vy){
+//   Particle temp;
+//   temp.x = x;
+//   temp.y = y;
+//   temp.vx = vx;
+//   temp.vy = vy;
+//   temp.colided = 0;
+//   return temp;
+// }
 
 int main(int argc, char *argv[])
 {
     if (argc != 3)
     {
         printf("Usage: %s <input_file> <output_file\n", argv[0]);
-        return 1;
+        exit(0);
     }
 
     char *inputFileName = argv[1];
@@ -120,31 +133,47 @@ int main(int argc, char *argv[])
     Particle particles[1000];
 
     FILE *file = fopen(inputFileName, "r");
+
+    FILE *outputFile = fopen(outputFileName, "w");
+    if (outputFile == NULL)
+    {
+        perror("Error opening output file");
+        exit(0);
+    }
     if (file == NULL)
     {
-        perror("Error opening input file");
-        return 1;
+        fprintf(outputFile, "Error opening input file");
+        exit(0);
     }
 
-    // Read the row value
-    fscanf(file, "%d", &rows);
     // Read the column value
     fscanf(file, "%d", &cols);
+        // Read the row value
+    fscanf(file, "%d", &rows);
     // Read the 
     fscanf(file, "%d", &time);
 
     int particle_count = 0;
     while (fgetc(file) != 'E' && fscanf(file, "%d, %d, %d, %d", &particles[particle_count].x, &particles[particle_count].y, &particles[particle_count].vx, &particles[particle_count].vy) == 4) { 
-      particles[particle_count].colided = 0;
-      particle_count++;
+        particles[particle_count].colided = 0;
+        particles[particle_count].y = rows - 1 - particles[particle_count].y; // Adjust y-coordinate
+        particles[particle_count].vy =    particles[particle_count].vy * -1;
+        particle_count++;
     }
+
+    // for (int i = 0; i < particle_count; i++) {
+    //   printf("%d", particles[i].x);
+    //   printf("%d", particles[i].y);
+    //   printf("%d", particles[i].vx);
+    //   printf("%d\n", particles[i].vy);
+    // }
 
     // Allocate memory for the 2D array
     char **arr = (char **)malloc(rows * sizeof(char *));
     if (arr == NULL)
     {
         printf("Memory allocation failed.\n");
-        return 1;
+        exit(0);
     }
     for (int i = 0; i < rows; i++)
     {
@@ -152,7 +181,7 @@ int main(int argc, char *argv[])
         if (arr[i] == NULL)
         {
             printf("Memory allocation failed.\n");
-            return 1;
+            exit(0);
         }
     }
 
@@ -160,34 +189,21 @@ int main(int argc, char *argv[])
     int borderRows = rows + 2;
     int borderCols = cols + 2;
 
-
     for (int i = time; i > 0; i--) {
       moveParticles(particles, particle_count, cols, rows);
     }
 
     updateGrid(&arr, borderRows, borderCols, particles, particle_count);
 
-    for (int i = 0; i < particle_count; i++) {
-      printf("%d", particles[i].x);
-      printf("%d", particles[i].y);
-      printf("%d", particles[i].vx);
-      printf("%d\n", particles[i].vy);
-    }
-
-    FILE *outputFile = fopen(outputFileName, "w");
-    if (outputFile == NULL)
+    for (int i = 0; i < rows + 2; i++)
     {
-        perror("Error opening output file");
-        return 1;
-    }
-
-    for (int i = cols+1; i >-1 ; i--)
-    {
-        for (int j = 0; j < rows + 2; j++)
+        for (int j = 0; j < cols + 2; j++)
         {
             fprintf(outputFile, "%c", arr[i][j]);
         }
+        if(i != rows +1){
         fprintf(outputFile, "\n");
+        }
     }
 
     fclose(outputFile);
@@ -201,3 +217,218 @@ int main(int argc, char *argv[])
 
     return 0;
 }
+// #include <stdio.h>
+// #include <stdlib.h>
+
+// typedef struct {
+//     int x;
+//     int y;
+//     int vx;
+//     int vy;
+//     int colided;
+// } Particle;
+
+// void updateGrid(char ***arr, int x, int y, Particle *parr, int count)
+// {
+
+//   //allocate memory for 
+//   char **newArr = (char **)malloc(x * y * sizeof(char *));
+
+//   for (int i = 0; i < x; i++)
+//   {
+//       newArr[i] = (char *)malloc(y * sizeof(char));
+//   }
+
+//   //create the border
+//   for (int i = 0; i < x; i++)
+//   {
+//                 printf("CHECK \n \n");
+//       for (int j = 0; j < y; j++)
+//       {
+//           if (i == 0 || i == x - 1 || j == 0 || j == y - 1)
+//           {
+//               newArr[j][i] = '*';
+//           }
+//           else
+//           {
+//               newArr[j][i] = ' ';
+//           }
+//       }
+//   }
+
+//   for (int p = 0; p < count && parr[p].colided == 0; p++) {
+//     printf("HERE %d HERE \n", parr[p].colided);
+//     newArr[parr[p].y + 1][parr[p].x + 1] = '+';
+//   }
+
+//   *arr = newArr;
+// }
+
+// // call this function in a for loop for each second the simulation runs.
+// void moveParticles(Particle *arr, int length, int gridLengthx, int gridLengthy) {
+//     // for each particle in the array given.
+//     for (int i = 0; i < length; i++) {
+//         if (arr[i].colided == 0) {
+//             // if the particle is going to move in the x direction
+//             if (arr[i].vx != 0) {
+//                 // check if the particle will move past the maximum if so bounce, then invert the velocity
+//                 if (arr[i].x + arr[i].vx > gridLengthx) {
+//                     arr[i].x = gridLengthx - (arr[i].x + arr[i].vx - gridLengthx);
+//                     arr[i].vx = -arr[i].vx;
+//                 }
+//                 // if past the minimum, bounce and invert
+//                 else if (arr[i].x + arr[i].vx < 0) {
+//                     arr[i].x = -(arr[i].x + arr[i].vx);
+//                     arr[i].vx = -arr[i].vx;
+//                 }
+//                 // regularly move the particle
+//                 else {
+//                     arr[i].x = arr[i].x + arr[i].vx;
+//                 }
+//             }
+//             // does the same thing for y as it did for x.
+
+//             if (arr[i].vy != 0) {
+//                 if (arr[i].y + arr[i].vy > gridLengthy) {
+//                     arr[i].y = gridLengthy - (arr[i].y + arr[i].vy - gridLengthy);
+              
+//   //allocate memory for 
+//   char **newArr = (char **)malloc(x * y * sizeof(char *));
+
+//   for (int i = 0; i < x; i++)
+//   {
+//       newArr[i] = (char *)malloc(y * sizeof(char));
+//   }
+
+//   //create the border
+//   for (int i = 0; i < x; i++)
+//   {
+//       arr[i].vy = -arr[i].vy; 
+//                 } else if (arr[i].y + arr[i].vy < 0) {
+//                     arr[i].y = -(arr[i].y + arr[i].vy);
+//                     arr[i].vy = -arr[i].vy;
+//                 } else {
+//                     arr[i].y = arr[i].y + arr[i].vy;
+//                 }
+//             }
+//             //check if the particles have collided. if they collide, set their velocity to 0, making them stop
+//             printf(" x and y %d %d \n", arr[i].x, arr[i].y);
+//             for (int a = 0; a < length; a++) {
+//                 if(a != i){
+//                 if ((arr[i].x == arr[a].x) && (arr[i].y == arr[a].y)) {
+//                     printf("colisions");
+//                     arr[i].colided = 1;
+//                     arr[a].colided = 1;
+                  
+//                 }
+//                 }
+//             }
+//         }
+//     }
+// }
+// Particle makeParticle(int x, int y, int vx, int vy){
+//   Particle temp;
+//   temp.x = x;
+//   temp.y = y;
+//   temp.vx = vx;
+//   temp.vy = vy;
+//   temp.colided = 0;
+//   return temp;
+// }
+
+// int main(int argc, char *argv[])
+// {
+//     if (argc != 3)
+//     {
+//         printf("Usage: %s <input_file> <output_file\n", argv[0]);
+//         exit(0);
+//     }
+
+//     char *inputFileName = argv[1];
+//     char *outputFileName = argv[2];
+
+//     int rows, cols, time;
+//     Particle particles[1000];
+
+//     FILE *file = fopen(inputFileName, "r");
+//     if (file == NULL)
+//     {
+//         perror("Error opening input file");
+//         exit(0);
+//     }
+
+//     // Read the row value
+//     fscanf(file, "%d", &rows);
+//     // Read the column value
+//     fscanf(file, "%d", &cols);
+//     // Read the 
+//     fscanf(file, "%d", &time);
+
+//     int particle_count = 0;
+//     while (fgetc(file) != 'E' && fscanf(file, "%d, %d, %d, %d", &particles[particle_count].x, &particles[particle_count].y, &particles[particle_count].vx, &particles[particle_count].vy) == 4) { 
+//       particles[particle_count].colided = 0;
+//       particle_count++;
+//     }
+
+//     // Allocate memory for the 2D array
+//     char **arr = (char **)malloc(rows * sizeof(char *));
+//     if (arr == NULL)
+//     {
+//         printf("Memory allocation failed.\n");
+//         exit(0);
+//     }
+//     for (int i = 0; i < rows; i++)
+//     {
+//         arr[i] = (char *)malloc(cols * sizeof(char));
+//         if (arr[i] == NULL)
+//         {
+//             printf("Memory allocation failed.\n");
+//             exit(0);
+//         }
+//     }
+
+//     //the size of the border
+//     int borderRows = rows + 2;
+//     int borderCols = cols + 2;
+
+
+//     for (int i = time; i > 0; i--) {
+//       moveParticles(particles, particle_count, cols, rows);
+//     }
+
+//     updateGrid(&arr, borderRows, borderCols, particles, particle_count);
+
+//     for (int i = 0; i < particle_count; i++) {
+//       printf("%d", particles[i].x);
+//       printf("%d", particles[i].y);
+//       printf("%d", particles[i].vx);
+//       printf("%d\n", particles[i].vy);
+//     }
+
+//     FILE *outputFile = fopen(outputFileName, "w");
+//     if (outputFile == NULL)
+//     {
+//         perror("Error opening output file");
+//         exit(0);
+//     }
+
+//     for (int i = cols+1; i >-1 ; i--)
+//     {
+//         for (int j = 0; j < rows + 2; j++)
+//         {
+//             fprintf(outputFile, "%c", arr[i][j]);
+//         }
+//         fprintf(outputFile, "\n");
+//     }
+
+//     fclose(outputFile);
+
+//     // Free memory
+//     for (int i = 0; i < rows + 2; i++)
+//     {
+//         free(arr[i]);
+//     }
+//     free(arr);
+
+//     return 0;
+// }
